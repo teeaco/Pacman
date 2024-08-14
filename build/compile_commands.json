@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/projects/packman/Pacman/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -g -o CMakeFiles\\pacman.dir\\main.cpp.obj -c C:\\projects\\packman\\Pacman\\main.cpp",
+  "file": "C:\\projects\\packman\\Pacman\\main.cpp",
+  "output": "CMakeFiles\\pacman.dir\\main.cpp.obj"
+}
+]
