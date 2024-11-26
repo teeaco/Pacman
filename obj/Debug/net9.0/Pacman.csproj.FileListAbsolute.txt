@@ -1,0 +1,15 @@
+C:\projects\packman\Pacman\bin\Debug\net9.0\Pacman.exe
+C:\projects\packman\Pacman\bin\Debug\net9.0\Pacman.deps.json
+C:\projects\packman\Pacman\bin\Debug\net9.0\Pacman.runtimeconfig.json
+C:\projects\packman\Pacman\bin\Debug\net9.0\Pacman.dll
+C:\projects\packman\Pacman\bin\Debug\net9.0\Pacman.pdb
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.GeneratedMSBuildEditorConfig.editorconfig
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.AssemblyInfoInputs.cache
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.AssemblyInfo.cs
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.csproj.CoreCompileInputs.cache
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.sourcelink.json
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.dll
+C:\projects\packman\Pacman\obj\Debug\net9.0\refint\Pacman.dll
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.pdb
+C:\projects\packman\Pacman\obj\Debug\net9.0\Pacman.genruntimeconfig.cache
+C:\projects\packman\Pacman\obj\Debug\net9.0\ref\Pacman.dll
