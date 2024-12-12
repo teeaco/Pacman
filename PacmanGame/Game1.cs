@@ -48,26 +48,26 @@ namespace PacmanGame
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
 
-
+        private int maxscore = 0;
 
         private bool ghostsReleased = false;
         private float ghostReleaseTime = 5.0f; // Время до выхода призраков (в секундах)
         private float elapsedTime = 0.0f;
 
-        public Game1()
+        public Game1() //ох уж этот жалкий конструктор инициализации
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-                // Устанавливаем размеры окна
+                // генерация окна
             _graphics.PreferredBackBufferWidth = 608;  // 19 * 32 пикселей (ширина карты)
             _graphics.PreferredBackBufferHeight = 672; // 21 * 32 пикселей (высота карты)
-            //_graphics.ApplyChanges();
-
-            pacmanPosition = new Vector2(32, 32);
-            totalDots = CountDots();
+        
+            pacmanPosition = new Vector2(32, 32); //generation pacman posit
+            totalDots = CountDots(); //food
         }
+        
 
         private int CountDots()
         {
@@ -81,8 +81,7 @@ namespace PacmanGame
 
         private void CollectBigDot()
         {
-            isBigDotActive = true; // Активируем эффект для больших пиллетов
-            // Дополнительная логика, например, сделать призраков уязвимыми
+            isBigDotActive = true; // заготовка под frightened
         }
 
         private Texture2D bigDotTexture;
@@ -91,104 +90,247 @@ namespace PacmanGame
             int cellSize = 32; // Assuming each cell is 32x32 pixels
             return new Vector2(x * cellSize, y * cellSize);
         }
-        protected override void LoadContent()
+        private List<Texture2D> pacmanFrames; //for animation
+        private List<Texture2D> pacmanFramesDown;
+        private List<Texture2D> pacmanFramesUp;
+        private List<Texture2D> pacmanFramesLeft;
+        private int currentFrame;
+        private double frameTime;
+        private double timeElapsed;
+
+        protected override void LoadContent() //загрузка всех ресурсов
         {
-            
+                pacmanFrames = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("frame0"),
+                Content.Load<Texture2D>("frame1"),
+                Content.Load<Texture2D>("frame2"),
+                Content.Load<Texture2D>("frame3"),
+                Content.Load<Texture2D>("frame4"),
+                Content.Load<Texture2D>("frame3"),
+                Content.Load<Texture2D>("frame2"),
+                Content.Load<Texture2D>("frame1"),
+                Content.Load<Texture2D>("frame0")
+            };
+
+                pacmanFramesDown = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("frameD0"),
+                Content.Load<Texture2D>("frameD1"),
+                Content.Load<Texture2D>("frameD2"),
+                Content.Load<Texture2D>("frameD3"),
+                Content.Load<Texture2D>("frame4"),
+                Content.Load<Texture2D>("frameD3"),
+                Content.Load<Texture2D>("frameD2"),
+                Content.Load<Texture2D>("frameD1"),
+                Content.Load<Texture2D>("frameD0")
+            };
+                pacmanFramesUp = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("frameU0"),
+                Content.Load<Texture2D>("frameU1"),
+                Content.Load<Texture2D>("frameU3"),
+                Content.Load<Texture2D>("frame4"),
+                Content.Load<Texture2D>("frameU3"),
+                Content.Load<Texture2D>("frameU1"),
+                Content.Load<Texture2D>("frameU0")
+            };
+                pacmanFramesLeft = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("frameL0"),
+                Content.Load<Texture2D>("frameL1"),
+                Content.Load<Texture2D>("frameL2"),
+                Content.Load<Texture2D>("frameL3"),
+                Content.Load<Texture2D>("frame4"),
+                Content.Load<Texture2D>("frameL3"),
+                Content.Load<Texture2D>("frameL2"),
+                Content.Load<Texture2D>("frameL1"),
+                Content.Load<Texture2D>("frameL0")
+            };
+            currentFrame = 0;
+            frameTime = 0.1; // 0.1 секунды на кадр
+                    
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            //bigDotTexture = Content.Load<Texture2D>("bigDot"); // Путь к текстуре
-            bigDotTexture = CreateTexture(Color.Black); // Путь к текстуре
+            bigDotTexture = Content.Load<Texture2D>("fruit");
             pacmanTexture = CreateTexture(Color.Yellow);
-            wallTexture = CreateTexture(Color.Blue);
-            floorTexture = CreateTexture(Color.White);
-            dotTexture = CreateTexture(Color.Gray);
+            wallTexture = CreateTexture(Color.Purple);
+            floorTexture = CreateTexture(Color.Black);
+            dotTexture = Content.Load<Texture2D>("dot");
 
             // Добавляем 4 призраков с разными цветами
-            ghosts.Add(new Ghost(StartPosition(9, 9), CreateTexture(Color.Red), map, new Vector2(0, 0))); // Угол карты вверху слева
-            ghosts.Add(new Ghost(StartPosition(9, 10), CreateTexture(Color.Purple), map, new Vector2(map.GetLength(1) - 1, 0))); // Угол карты вверху справа
-            ghosts.Add(new Ghost(StartPosition(10, 10), CreateTexture(Color.Orange), map, new Vector2(0, map.GetLength(0) - 1))); // Угол карты внизу слева
-            ghosts.Add(new Ghost(StartPosition(8, 10), CreateTexture(Color.Cyan), map, new Vector2(map.GetLength(1) - 1, map.GetLength(0) - 1))); // Угол карты внизу справа
+            ghosts.Add(new Ghost(StartPosition(9, 9), Content.Load<Texture2D>("red"), map, new Vector2(0, 0))); // Угол карты вверху слева
+            ghosts.Add(new Ghost(StartPosition(9, 10), Content.Load<Texture2D>("pink"), map, new Vector2(map.GetLength(1) - 1, 0))); // Угол карты вверху справа
+            ghosts.Add(new Ghost(StartPosition(10, 10), Content.Load<Texture2D>("orange"), map, new Vector2(0, map.GetLength(0) - 1))); // Угол карты внизу слева
+            ghosts.Add(new Ghost(StartPosition(8, 10), Content.Load<Texture2D>("cyan"), map, new Vector2(map.GetLength(1) - 1, map.GetLength(0) - 1))); // Угол карты внизу справа
 
-        }
 
-        private Texture2D CreateTexture(Color color)
+
+        }//public Ghost(Vector2 startPosition, Vector2 exitTarget, Texture2D ghostTexture, int[,] gameMap, Color color)
+
+        public Texture2D CreateTexture(Color color)
         {
             Texture2D texture = new Texture2D(GraphicsDevice, 32, 32);
             Color[] data = new Color[32 * 32];
             for (int i = 0; i < data.Length; i++) data[i] = color;
             texture.SetData(data);
             return texture;
-        }
-
+        }        
         private Vector2 pacmanDirection = new Vector2(1, 0); // Начальное направление вправо
         private bool gameStarted = false; // Флаг для проверки, началась ли игра
-        protected override void Update(GameTime gameTime)
-        {
+        int mapWidth = 576;  // Примерная ширина карты (в клетках) 608
+        int mapHeight = 672;
+        //Vector2 pacmanPosition = new Vector2(50, 50); 
+    protected override void Update(GameTime gameTime) //состояние игры на каждый кадр
+    {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                Exit(); // Выход из игры
+            }
+
             if (gameLost || gameWon)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                    Exit();
-                return;
-            }
-            if (!gameStarted)
-            {
-                if (Keyboard.GetState().GetPressedKeys().Length > 0) // Проверка на нажатие любой клавиши
                 {
-                    gameStarted = true; // Игра началась
+                    RestartGame(); // Рестарт игры
                 }
                 return;
             }
+        timeElapsed += gameTime.ElapsedGameTime.TotalSeconds; //для анимашек
 
-            KeyboardState keyboardState = Keyboard.GetState();
 
-            // Выбираем новое направление, если пользователь нажал клавишу
-            Vector2 desiredDirection = pacmanDirection;
-            if (keyboardState.IsKeyDown(Keys.Up)) desiredDirection = new Vector2(0, -1);
-            if (keyboardState.IsKeyDown(Keys.Down)) desiredDirection = new Vector2(0, 1);
-            if (keyboardState.IsKeyDown(Keys.Left)) desiredDirection = new Vector2(-1, 0);
-            if (keyboardState.IsKeyDown(Keys.Right)) desiredDirection = new Vector2(1, 0);
-
-            // Вычисляем новую позицию на основе направления
-            Vector2 nextPosition = pacmanPosition + desiredDirection * 2;
-
-            // Если новое направление допустимо, обновляем pacmanDirection
-            if (IsValidMove(nextPosition, 32))
+        if (timeElapsed >= frameTime)
+        {
+            if (pacmanDirection == new Vector2(0, -1))  // Если движение вниз
             {
-                pacmanDirection = desiredDirection;
+                currentFrame = (currentFrame + 1) % pacmanFramesDown.Count; // Используем pacmanFramesDown
+            }
+            if (pacmanDirection == new Vector2(0, 1))  // Если движение вверх
+            {
+                currentFrame = (currentFrame + 1) % pacmanFramesUp.Count; 
+            }
+            if (pacmanDirection == new Vector2(-1, 0))  // Если движение вktdj
+            {
+                currentFrame = (currentFrame + 1) % pacmanFramesLeft.Count; 
+            }
+            else  
+            {
+                currentFrame = (currentFrame + 1) % pacmanFrames.Count; 
             }
 
-            // Пытаемся двигаться в текущем направлении
-            Vector2 movePosition = pacmanPosition + pacmanDirection * 2;
-            if (IsValidMove(movePosition, 32))
+            // без него оно не хотело запускаться
+            if (currentFrame >= pacmanFrames.Count || currentFrame >= pacmanFramesDown.Count
+             || currentFrame >= pacmanFramesLeft.Count || currentFrame >= pacmanFramesUp.Count)
             {
-                pacmanPosition = movePosition;
-                CollectDot();
+                currentFrame = 0;  // Сброс индекса в на/чало, если он вышел за пределы
             }
 
-            // Обновляем призраков
-            foreach (var ghost in ghosts)
-            {
-                ghost.Update(pacmanPosition); // Передаем позицию Pac-Man для логики преследования
-
-                if (ghost.CheckCollision(pacmanPosition))
-                {
-                    if (ghost.CurrentMode == Ghost.Mode.Frightened) // Если призрак испуган
-                    {
-                        ghosts.Remove(ghost); // Удаляем пойманного призрака
-                    }
-                    else
-                    {
-                        gameLost = true; // Столкновение с обычным призраком — проигрыш
-                        break;
-                    }
-                }
-            }
-
-
-            base.Update(gameTime);
+            timeElapsed -= frameTime;
         }
 
+        if (gameLost || gameWon)
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                Exit(); // Выход, если игра закончена и нажата пробел
+            return;
+        }
 
+        if (!gameStarted)
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Space)) // Игрок нажал пробел для старта
+            {
+                gameStarted = true; // Игра началась
+            }
+            return;
+        }
         
+        KeyboardState keyboardState = Keyboard.GetState();
+        
+        // Выбираем новое направление, если пользователь нажал клавишу
+        Vector2 desiredDirection = pacmanDirection;
+        if (keyboardState.IsKeyDown(Keys.Up)) desiredDirection = new Vector2(0, -1);
+        if (keyboardState.IsKeyDown(Keys.Down)) desiredDirection = new Vector2(0, 1);
+        if (keyboardState.IsKeyDown(Keys.Left)) desiredDirection = new Vector2(-1, 0);
+        if (keyboardState.IsKeyDown(Keys.Right)) desiredDirection = new Vector2(1, 0);
+
+        // Проверяем, если новое направление допустимо
+        Vector2 nextPosition = pacmanPosition + desiredDirection * 2;
+        if (IsValidMove(nextPosition, 32)) // 32 - размер шага
+        {
+            pacmanDirection = desiredDirection; // Обновляем направление
+        }
+
+        Vector2 movePosition = pacmanPosition + pacmanDirection * 2;
+        if (IsValidMove(movePosition, 32))
+        {
+            pacmanPosition = movePosition; // Обновляем позицию
+            CollectDot(); // Собираем точку
+        }
+
+        if (nextPosition.X < 0)
+        {
+            // Пакман выходит слева, появляется справа
+            pacmanPosition.X = mapWidth - 32;
+            pacmanDirection = new Vector2 (-1, 0);
+        }
+        else if (nextPosition.X >= mapWidth)
+        {
+            // Пакман выходит справа, появляется слева
+            pacmanPosition.X = 32;
+            pacmanDirection = new Vector2 (1, 0);
+        }
+
+        if (nextPosition.Y < 0) //на будущее
+        {
+            // Пакман выходит сверху, появляется снизу
+            pacmanPosition.Y = mapHeight - 1;
+        }
+        else if (nextPosition.Y >= mapHeight)
+        {
+            // Пакман выходит снизу, появляется сверху
+            pacmanPosition.Y = 0;
+        }
+
+        // Обновляем призраков
+        for (int i = 0; i < ghosts.Count; i++) // Проходим по всем призракам
+        {
+            var ghost = ghosts[i];
+            if (ghost.position.X < 0)
+            {
+                // Призрак выходит слева, появляется справа
+                ghost.position.X = mapWidth - 32; // 32 — ширина спрайта призрака, подставьте нужное значение
+                ghost.direction = new Vector2(1, 0); // Меняем направление на правое
+            }
+            else if (ghost.position.X >= mapWidth)
+            {
+                // Призрак выходит справа, появляется слева
+                ghost.position.X = 32; // 32 — начальная позиция слева
+                ghost.direction = new Vector2(-1, 0); // Меняем направление на левое
+            }
+
+        // Обновляем движение призрака
+            ghost.Update(gameTime, pacmanPosition, ghost.ScatterTarget ); //GameTime gameTime, Vector2 pacmanPosition, Vector2 scatterTarget
+            
+            // Проверка на столкновение с призраком
+            if (ghost.CheckCollision(pacmanPosition))
+            {
+                if (ghost.CurrentMode == Ghost.Mode.Frightened)
+                {
+                    //не удалось
+                }
+                else
+                {
+                    gameLost = true; // Проигрыш при столкновении с обычным призраком
+                    break;
+                }
+            }
+        }
+
+        base.Update(gameTime); // Вызов метода базового класса
+    }
+
+
+
+        //чек границ,чтобы никто по полю не летал
         private bool IsValidMove(Vector2 position, int textureSize)
         {
             // Границы карты
@@ -201,17 +343,16 @@ namespace PacmanGame
             if (position.X < minX || position.Y < minY || position.X + textureSize > maxX || position.Y + textureSize > maxY)
                 return false;
 
-            // Проверяем, не выходит ли Пакмэн за границы карты с учетом размера
             int startX = (int)(position.X / textureSize);
             int startY = (int)(position.Y / textureSize);
             int endX = (int)((position.X + textureSize - 1) / textureSize); // Последний элемент по X
             int endY = (int)((position.Y + textureSize - 1) / textureSize); // Последний элемент по Y
 
-            // Проверяем, не выходит ли Пакмэн за границы карты
+            
             if (startX < 0 || startY < 0 || endX >= map.GetLength(1) || endY >= map.GetLength(0))
                 return false;
 
-            // Проверяем, что Пакмэн не столкнется со стенами (предположим, что 1 — это стена)
+        
             for (int x = startX; x <= endX; x++)
             {
                 for (int y = startY; y <= endY; y++)
@@ -221,7 +362,7 @@ namespace PacmanGame
                 }
             }
 
-            return true; // Все проверки пройдены
+            return true; // Все проверки пройдены!
         }
 
 
@@ -235,20 +376,24 @@ namespace PacmanGame
             if (map[mapY, mapX] == 2)
             {
                 map[mapY, mapX] = 0; // Remove the dot
-                score += 10;         // Increase score
-                totalDots--;         // Decrease the total number of dots
+                score += 10;        
+                count++;        
             }
             // Check if the position contains a big dot (3)
             else if (map[mapY, mapX] == 3)
             {
-                map[mapY, mapX] = 0; // Remove the big dot
-                score += 50;         // Increase score for big dot
-                CollectBigDot();     // Trigger big dot effects
-                totalDots--;         // Decrease the total number of dots
+                map[mapY, mapX] = 0; 
+                score += 50;         
+                CollectBigDot();     // Trigger big dot effects FAIL
+                
+            }
+            if(score > maxscore)
+            {
+                maxscore = score; //6:24
             }
 
             // Check for win condition
-            if (totalDots == 0)
+            if (totalDots == count)
             {
                 gameWon = true; // Mark the game as won
             }
@@ -256,9 +401,10 @@ namespace PacmanGame
 
 
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw(GameTime gameTime) //отрисовка всего
         {
             GraphicsDevice.Clear(Color.Black);
+            Texture2D currentpacFrame = null;
 
             _spriteBatch.Begin();
 
@@ -277,11 +423,28 @@ namespace PacmanGame
                         _spriteBatch.Draw(floorTexture, position, Color.White);
                 }
             }
-
-
-            // Отрисовка Pacman
-            _spriteBatch.Draw(pacmanTexture, pacmanPosition, Color.White);
-
+            //animation
+            if (pacmanDirection == new Vector2 (0, 1))
+            {
+                currentpacFrame = pacmanFramesDown[currentFrame];
+            }
+            else if (pacmanDirection == new Vector2 (0, -1))
+            {
+                currentpacFrame = pacmanFramesUp[currentFrame];
+            }
+            if (pacmanDirection.X == -1)
+            {
+                currentpacFrame = pacmanFramesLeft[currentFrame];
+            }
+            else if(pacmanDirection.X == 1)
+            {
+                currentpacFrame = pacmanFrames[currentFrame];
+            }
+                if (currentpacFrame != null)
+            {
+                _spriteBatch.Draw(currentpacFrame, pacmanPosition, Color.White);
+            }
+            
             // Отрисовка призраков
             foreach (var ghost in ghosts)
             {
@@ -289,8 +452,11 @@ namespace PacmanGame
             }
                         // Отрисовка текста с очками
             string scoreText = $"Score: {score}";
-            var font = Content.Load<SpriteFont>("DefaultFont"); // Ensure you have a font file in Content
+            var font = Content.Load<SpriteFont>("DefaultFont"); 
             _spriteBatch.DrawString(font, scoreText, new Vector2(10, 10), Color.White);
+
+            string MaxscoreText = $"MaxScore: {maxscore}";
+            //_spriteBatch.DrawString(font, MaxscoreText, new Vector2(450, 10), Color.White);
 
             if (gameWon)
                 DrawMessage("YOU WIN!");
@@ -312,188 +478,58 @@ namespace PacmanGame
             );
             _spriteBatch.DrawString(font, message, position, Color.White);
         }
-    }
+    
 
-public class Ghost
-{
-    private Vector2 position;
-    private Texture2D texture;
-    private Vector2 direction;
-    private int[,] map;
-    private static Random random = new Random();
 
-    public Mode currentMode; // Режим поведения
-    private Vector2 homeCorner; // Угол карты для режима рассеяния
-    private Vector2 scatterTarget; // Целевая точка для Scatter
-    private float modeSwitchTimer; // Таймер для переключения режимов
-    private Vector2 pacmanPosition; // Позиция Pac-Man (передается извне)
-
-    public enum Mode
+    private void RestartGame() //обнуление всего, что менялось
     {
-        Scatter,
-        Chase,
-        Frightened
-    }
-    public bool IsVulnerable { get; set; } = false;
-    private Vector2 startPosition; // Начальная позиция
-    private bool isOutOfBox; // Флаг, указывающий, что призрак вышел из коробки
+        // Сбрасываем состояние игры
+        gameWon = false;
+        gameLost = false;
+        gameStarted = true;
 
-    // Конструктор класса Ghost
-    public Ghost(Vector2 position, Texture2D texture, int[,] map, Vector2 homeCorner)
-    {
-        this.position = position;
-        this.texture = texture;
-        this.map = map;
-        this.homeCorner = homeCorner;
-        this.currentMode = Mode.Scatter;
-        this.modeSwitchTimer = 7f; // Каждые 7 секунд режим переключается
-        this.startPosition = position; // Сохраняем начальную позицию
-        direction = GetRandomDirection();
-        this.isOutOfBox = false; // Изначально призрак в коробке
-    }
+        // Сбрасываем позицию пакмана
+        pacmanPosition = new Vector2(32, 32);
+        pacmanDirection = new Vector2(1, 0); // Начальное направление вправо
 
-    public Mode CurrentMode
-    {
-        get { return currentMode; }
-    }
+        // Сбрасываем счет
+        score = 0;
 
-    // Метод обновления состояния призрака
-// Метод обновления состояния призрака
-    public void Update(Vector2 pacmanPosition)
-    {
-        this.pacmanPosition = pacmanPosition;
+        // Возвращаем призраков в начальные позиции
+        ghosts.Clear(); // Очищаем список призраков
+        ghosts.Add(new Ghost(StartPosition(9, 9), Content.Load<Texture2D>("red"), map, new Vector2(0, 0)));
+        ghosts.Add(new Ghost(StartPosition(9, 10), Content.Load<Texture2D>("pink"), map, new Vector2(map.GetLength(1) - 1, 0)));
+        ghosts.Add(new Ghost(StartPosition(10, 10), Content.Load<Texture2D>("orange"), map, new Vector2(0, map.GetLength(0) - 1)));
+        ghosts.Add(new Ghost(StartPosition(8, 10), Content.Load<Texture2D>("cyan"), map, new Vector2(map.GetLength(1) - 1, map.GetLength(0) - 1)));
 
-        // Переключение режимов по таймеру
-        modeSwitchTimer -= 0.016f; // Предполагается, что кадр = 16 мс
-        if (modeSwitchTimer <= 0)
+        // Восстанавливаем карту
+        map = new int[21, 19]
         {
-            if (currentMode == Mode.Scatter)
-                currentMode = Mode.Chase;
-            else if (currentMode == Mode.Chase)
-                currentMode = Mode.Scatter;
-            modeSwitchTimer = 7f; // Сброс таймера
-        }
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 3, 2, 2, 2, 2, 1},
+            {1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1},
+            {1, 3, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1},
+            {0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 1, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 2, 1, 1, 1, 0, 1, 1, 1, 2, 1, 1, 1, 1, 1},
+            {2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 2},
+            {1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1},
+            {0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1},
+            {1, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+            {1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1},
+            {1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 3, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+        };
 
-        // Логика движения в зависимости от текущего режима
-        if (currentMode == Mode.Chase)
-        {
-            direction = GetNextDirection(pacmanPosition); // Движение к Pac-Man
-        }
-        else if (currentMode == Mode.Scatter)
-        {
-            direction = GetNextDirection(homeCorner); // Движение к "домашнему углу"
-        }
-        else if (currentMode == Mode.Frightened)
-        {
-            direction = GetRandomDirection(); // Случайное движение
-        }
-
-        Vector2 newPosition = position + direction * 1.6f; // применяем скорость
-
-        // Проверка на валидность движения
-        if (IsValidMove(newPosition))
-        {
-            position = newPosition;
-        }
-        else
-        {
-            direction = GetRandomDirection(); // Если движение невозможно, выбираем случайное направление
-        }
-
-        // Логика выхода из коробки
-        if (!isOutOfBox)
-        {
-            Vector2 boxExit = new Vector2(7, 8); // Пример координаты выхода
-            direction = GetNextDirection(boxExit); // Направляем призрака к выходу
-
-            if (Vector2.Distance(position, boxExit) < 60f) // Если близко к выходу
-            {
-                isOutOfBox = true; // Призрак выходит из коробки
-                currentMode = Mode.Scatter; // Сразу переключаемся в режим погони
-            }
-        }
-    }
-
-
-    // Метод активации режима испуга
-    public void EnterFrightenedMode()
-    {
-        currentMode = Mode.Frightened;
-        modeSwitchTimer = 5f; // Испуганное состояние длится 5 секунд
-    }
-
-    // Метод для получения следующего направления для призрака
-    public Vector2 GetNextDirection(Vector2 target)
-    {
-        // Получаем возможные направления
-        List<Vector2> possibleDirections = new List<Vector2>();
-
-        Vector2[] directions = { Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY };
-
-        foreach (var dir in directions)
-        {
-            Vector2 newPos = position + dir * texture.Width;
-            if (IsValidMove(newPos))  // Проверяем, не упирается ли в стену
-            {
-                possibleDirections.Add(dir);
-            }
-        }
-
-        // Выбираем направление, которое будет наиболее подходящим для движения в сторону цели (target)
-        Vector2 bestDirection = possibleDirections.OrderBy(d => Vector2.Distance(target, position + d * texture.Width)).First();
-        return bestDirection;
-    }
-
-
-    // Метод для получения случайного направления
-    private Vector2 GetRandomDirection()
-    {
-        Vector2[] directions = { Vector2.UnitX, -Vector2.UnitX, Vector2.UnitY, -Vector2.UnitY };
-        return directions[random.Next(directions.Length)];
-    }
-
-    // Метод проверки валидности движения
-    private bool IsValidMove(Vector2 position)
-    {
-        float minX = 0;
-        float minY = 0;
-        float maxX = map.GetLength(1) * texture.Width;
-        float maxY = map.GetLength(0) * texture.Height;
-
-        if (position.X < minX || position.Y < minY || position.X + texture.Width > maxX || position.Y + texture.Height > maxY)
-            return false;
-
-        int startX = (int)(position.X / texture.Width);
-        int startY = (int)(position.Y / texture.Height);
-        int endX = (int)((position.X + texture.Width - 1) / texture.Width);
-        int endY = (int)((position.Y + texture.Height - 1) / texture.Height);
-
-        if (startX < 0 || startY < 0 || endX >= map.GetLength(1) || endY >= map.GetLength(0))
-            return false;
-
-        for (int x = startX; x <= endX; x++)
-        {
-            for (int y = startY; y <= endY; y++)
-            {
-                if (map[y, x] == 1)
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
-    // Метод отрисовки призрака
-    public void Draw(SpriteBatch spriteBatch)
-    {
-        spriteBatch.Draw(texture, position, currentMode == Mode.Frightened ? Color.Blue : Color.White);
-    }
-
-    // Метод проверки столкновения с Pac-Man
-    public bool CheckCollision(Vector2 pacmanPosition)
-    {
-        return Vector2.Distance(position + new Vector2(texture.Width / 2, texture.Height / 2),
-            pacmanPosition + new Vector2(texture.Width / 2, texture.Height / 2)) < texture.Width;
+        // Сбрасываем количество точек
+        totalDots = CountDots();
     }
 }
 }

@@ -5,8 +5,52 @@
   <Config />
   <SourceFiles>
     <File>C:/projects/packman/Pacman/PacmanGame/Content/DefaultFont.spritefont</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/cyan.jpg</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/orange.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/pink.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/red.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/fruit.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frame0.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frame1.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frame2.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frame3.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frame4.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/dot.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameD0.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameL0.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameU0.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameD1.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameL1.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameU1.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameD2.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameL2.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameD3.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameL3.png</File>
+    <File>C:/projects/packman/Pacman/PacmanGame/Content/frameU3.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>
